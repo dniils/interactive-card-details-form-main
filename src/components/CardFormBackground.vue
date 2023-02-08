@@ -15,34 +15,44 @@
           <div class="circle-full"></div>
           <div class="circle-border"></div>
         </div>
-        <div v-if="cardNumber" class="card-form-background__card-number">
-          {{ cardNumber }}
+        <div
+          v-if="form.cardNumber?.value"
+          class="card-form-background__card-number"
+        >
+          {{ form.cardNumber?.value }}
         </div>
-        <div v-if="!cardNumber" class="card-form-background__card-number">
+        <div
+          v-if="!form.cardNumber?.value"
+          class="card-form-background__card-number"
+        >
           0000 0000 0000 0000
         </div>
 
         <div class="flexbox">
           <div
-            v-if="cardholderName"
+            v-if="form.cardholderName?.value"
             class="card-form-background__cardholder-name"
           >
-            {{ cardholderName?.toUpperCase() }}
+            {{ form.cardholderName?.value.toUpperCase() }}
           </div>
 
           <div
-            v-if="!cardholderName"
+            v-if="!form.cardholderName?.value"
             class="card-form-background__cardholder-name"
           >
             JANE APPLESEED
           </div>
 
           <div class="card-form-background__card-exp-date">
-            <span v-if="!cardMonth && !cardYear">09</span>
-            <span v-else>{{ cardMonth }}</span
+            <span v-if="!form.cardMonth?.value && !form.cardYear?.value"
+              >09</span
+            >
+            <span v-else>{{ form.cardMonth?.value }}</span
             >/
-            <span v-if="!cardYear && !cardMonth">25</span>
-            <span v-else>{{ cardYear }}</span>
+            <span v-if="!form.cardYear?.value && !form.cardMonth?.value"
+              >25</span
+            >
+            <span v-else>{{ form.cardYear?.value }}</span>
           </div>
         </div>
       </div>
@@ -56,9 +66,11 @@
         }"
         class="card-form-background__card-back"
       >
-        <div v-if="!cardCvc" class="card-form-background__card-cvc">000</div>
-        <div v-if="cardCvc" class="card-form-background__card-cvc">
-          {{ cardCvc }}
+        <div v-if="!form.cardCvc?.value" class="card-form-background__card-cvc">
+          000
+        </div>
+        <div v-if="form.cardCvc?.value" class="card-form-background__card-cvc">
+          {{ form.cardCvc?.value }}
         </div>
       </div>
     </div>
@@ -72,11 +84,7 @@ let mouseOverFirstCard = ref();
 let mouseOverSecondCard = ref();
 
 defineProps({
-  cardholderName: String,
-  cardNumber: String,
-  cardMonth: String,
-  cardYear: String,
-  cardCvc: String,
+  form: Object,
 });
 
 function mouseOverFirstCardEventHandler() {
@@ -104,50 +112,26 @@ function mouseOutSecondCardEventHandler() {
 .scaledUp {
   scale: 1.05;
   filter: drop-shadow(0 5px 10px rgba(34, 3, 68, 0.526));
+  z-index: 2 !important;
 }
 
 .scaledDown {
   scale: 0.9;
   filter: blur(2px);
+  z-index: 1 !important;
 }
-
 .card-form-background {
-  height: 100vh;
-  width: 30%; //default width = 483px
-  background-image: url("../assets/images/bg-main-desktop.png");
+  background-image: url("../assets/images/bg-main-mobile.png");
   background-repeat: no-repeat;
   background-size: cover;
+  height: 239px;
+  width: 100%;
   display: flex;
-  align-items: center;
+  justify-content: center;
+  z-index: 0;
 
   .card-form-cards-wrapper {
-    margin-left: 15%;
-  }
-
-  &__card-front {
-    color: #fff;
-    margin-bottom: 30px;
-    background-image: url("../assets/images/bg-card-front.png");
-    width: 447px;
-    height: 245px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: all 0.5s ease-in-out;
-  }
-
-  &__card-back {
-    color: #fff;
-    margin-left: 100px;
-    background-image: url("../assets/images/bg-card-back.png");
-    width: 447px;
-    height: 245px;
-    padding-right: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    transition: all 0.5s ease-in-out;
+    position: relative;
   }
 
   .flexbox {
@@ -156,30 +140,196 @@ function mouseOutSecondCardEventHandler() {
     justify-content: space-between;
   }
 
-  &__card-number {
-    margin-bottom: 20px;
-    font-size: 32px;
+  &__card-front {
+    color: #fff;
+    background-image: url("../assets/images/bg-card-front.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    position: absolute;
+    width: 285px;
+    height: 156px;
+    top: 126px;
+    left: -170px;
+    justify-content: space-between;
+    padding: 15px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.5s ease-in-out;
   }
 
+  &__card-back {
+    color: #fff;
+    background-image: url("../assets/images/bg-card-back.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    position: absolute;
+    margin: 0;
+    width: 285px;
+    height: 156px;
+    top: 30px;
+    left: -116px;
+    padding-right: 33px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    transition: all 0.5s ease-in-out;
+  }
   &__circles {
     display: flex;
     align-items: center;
-    margin-bottom: 70px;
+    margin-bottom: 45px;
   }
 
   .circle-full {
-    width: 50px;
-    height: 50px;
+    width: 25px;
+    height: 25px;
     background-color: #fff;
     border-radius: 50%;
   }
 
   .circle-border {
-    margin-left: 20px;
-    width: 20px;
-    height: 20px;
+    margin-left: 10px;
+    width: 10px;
+    height: 10px;
     border: 1px solid #fff;
     border-radius: 50%;
+  }
+
+  &__card-number {
+    font-size: 20px;
+  }
+
+  &__card-cvc,
+  &__cardholder-name,
+  &__card-exp-date {
+    font-size: 12px;
+    span {
+      font-size: 12px;
+    }
+  }
+}
+
+@media (min-width: 900px) {
+  .card-form-background {
+    &__circles {
+      margin-bottom: 60px;
+    }
+
+    .circle-full {
+      width: 30px;
+      height: 30px;
+    }
+
+    .circle-border {
+      width: 12px;
+      height: 12px;
+    }
+
+    &__card-front {
+      width: 342px;
+      height: 187px;
+      left: -225px;
+    }
+
+    &__card-back {
+      width: 342px;
+      height: 187px;
+      padding-right: 40px;
+    }
+
+    &__card-number {
+      font-size: 24px;
+    }
+
+    &__card-cvc,
+    &__cardholder-name,
+    &__card-exp-date {
+      font-size: 14px;
+      span {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (min-width: 1300px) {
+  .card-form-background {
+    height: 100vh;
+    width: 30%;
+    background-image: url("../assets/images/bg-main-desktop.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    .card-form-cards-wrapper {
+      width: 0;
+      margin-left: 10%;
+    }
+
+    &__card-front {
+      color: #fff;
+      margin-bottom: 30px;
+      background-image: url("../assets/images/bg-card-front.png");
+      background-repeat: no-repeat;
+      background-size: contain;
+      width: 447px;
+      height: 245px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.5s ease-in-out;
+      position: unset;
+    }
+
+    &__card-back {
+      color: #fff;
+      margin-left: 100px;
+      background-image: url("../assets/images/bg-card-back.png");
+      background-repeat: no-repeat;
+      background-size: contain;
+      width: 447px;
+      height: 245px;
+      padding-right: 60px;
+      display: flex;
+      align-items: center;
+      transition: all 0.5s ease-in-out;
+      position: unset;
+    }
+
+    .circle-full {
+      width: 50px;
+      height: 50px;
+    }
+
+    .circle-border {
+      width: 20px;
+      height: 20px;
+    }
+
+    .flexbox {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    &__card-number {
+      margin-bottom: 20px;
+      font-size: 32px;
+    }
+
+    &__card-cvc,
+    &__cardholder-name,
+    &__card-exp-date {
+      font-size: 18px;
+      span {
+        font-size: 18px;
+      }
+    }
   }
 }
 </style>

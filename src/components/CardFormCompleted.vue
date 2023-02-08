@@ -28,8 +28,10 @@ const emit = defineEmits("resetFormEvent");
 .card-form-completed {
   display: flex;
   align-items: center;
-  width: calc(100vw - 30%);
+  width: 100%;
   justify-content: center;
+  height: 100vh;
+  padding: 0 20px;
 }
 
 .form-completed {

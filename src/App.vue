@@ -1,17 +1,13 @@
 <template>
   <div class="app">
-    <card-form-background
-      v-bind="{ cardholderName, cardNumber, cardMonth, cardYear, cardCvc }"
-    />
+    <!-- v-bind="{ cardholderName, cardNumber, cardMonth, cardYear, cardCvc }" -->
+    <card-form-background :form="formState" />
     <card-form-active
       v-if="!submitted"
       @input-event="inputEventHandler"
       @submit-event="submitEventHandler"
     />
-    <card-form-completed
-      v-if="submitted"
-      @reset-form-event="resetFormEventHandler"
-    />
+    <card-form-completed v-else @reset-form-event="resetFormEventHandler" />
   </div>
 </template>
 
@@ -21,49 +17,24 @@ import CardFormBackground from "@/components/CardFormBackground.vue";
 import CardFormActive from "@/components/CardFormActive.vue";
 import CardFormCompleted from "@/components/CardFormCompleted.vue";
 
-const cardholderName = ref();
-const cardNumber = ref();
-const cardMonth = ref();
-const cardYear = ref();
-const cardCvc = ref();
-let submitted = ref(false);
-let correctInputData = ref();
+let formState = ref({});
 
-function inputEventHandler(
-  nameValue,
-  cardNumberValue,
-  monthValue,
-  yearValue,
-  cvcValue
-) {
-  cardholderName.value = nameValue.value?.trim();
-  cardNumber.value = cardNumberValue.value;
-  cardMonth.value = monthValue.value;
-  cardYear.value = yearValue.value;
-  cardCvc.value = cvcValue.value;
+let submitted = ref(false);
+
+function inputEventHandler(form) {
+  Object.assign(formState.value, form);
 }
 
-function submitEventHandler(val1, val2, val3, val4, val5) {
-  correctInputData.value = [
-    val1.value,
-    val2.value,
-    val3.value,
-    val4.value,
-    val5.value,
-  ];
-
-  correctInputData.value.some((el) => el === false)
-    ? (submitted.value = false)
-    : (submitted.value = true);
+function submitEventHandler(form) {
+  submitted.value = !Object.values(form).some((obj) => obj.error === true);
 }
 
 function resetFormEventHandler() {
-  cardholderName.value = "";
-  cardNumber.value = "";
-  cardMonth.value = "";
-  cardYear.value = "";
-  cardCvc.value = "";
   submitted.value = false;
+
+  for (let i = 0; i < Object.keys(formState.value).length; i++) {
+    formState.value[Object.keys(formState.value)[i]].value = "";
+  }
 }
 </script>
 
@@ -74,13 +45,14 @@ function resetFormEventHandler() {
 
 .app {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: stretch;
 }
 
-@media (max-width: 500px) {
+@media (min-width: 1300px) {
   .app {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
   }
 }
 </style>

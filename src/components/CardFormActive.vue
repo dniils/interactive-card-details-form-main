@@ -6,15 +6,15 @@
         <input
           @blur="validateCardholderName"
           @input="nameInputHandler"
-          v-model="cardholderName"
+          v-model="form.cardholderName.value"
           class="card-form__input"
-          :class="{ wrong: !correctName }"
+          :class="{ wrong: form.cardholderName.error }"
           placeholder="Jane Appleseed"
           type="text"
+          inputmode="text"
           required
         />
-
-        <div v-if="!correctName" class="card-form__error">
+        <div v-if="form.cardholderName.error" class="card-form__error">
           Please, enter your Name and Surname
         </div>
       </div>
@@ -24,42 +24,48 @@
         <input
           @blur="validateCardNumber"
           @input="cardNumberInputHandler"
-          v-model="cardNumber"
+          v-model="form.cardNumber.value"
           class="card-form__input"
-          :class="{ wrong: !correctCardNumber }"
+          :class="{ wrong: form.cardNumber.error }"
           type="text"
           placeholder="0000 0000 0000 0000"
+          inputmode="numeric"
           required
         />
-        <div v-if="!correctCardNumber" class="card-form__error">
+        <div v-if="form.cardNumber.error" class="card-form__error">
           Only 16 digits cards allowed
         </div>
       </div>
 
       <div class="card-form__flexbox">
         <div class="card-form__inputBox">
-          <div class="card-form__title">Exp. Date (MM/YY)</div>
+          <div class="card-form__title">Exp. Date</div>
           <div class="card-form__flexbox">
             <input
               @blur="validateMonth"
               @input="cardMonthInputHandler"
-              v-model="cardMonth"
+              v-model="form.cardMonth.value"
               class="card-form__input card-form__input_month-year"
-              :class="{ wrong: !correctMonth }"
+              :class="{ wrong: form.cardMonth.error }"
               placeholder="MM"
+              inputmode="numeric"
               required
             />
 
             <input
               @blur="validateYear"
               @input="cardYearInputHandler"
-              v-model="cardYear"
+              v-model="form.cardYear.value"
               class="card-form__input card-form__input_month-year"
-              :class="{ wrong: !correctYear }"
+              :class="{ wrong: form.cardYear.error }"
               placeholder="YY"
+              inputmode="numeric"
               required
             />
-            <div v-if="!correctMonth || !correctYear" class="card-form__error">
+            <div
+              v-if="form.cardMonth.error || form.cardYear.error"
+              class="card-form__error"
+            >
               Check format
             </div>
           </div>
@@ -70,13 +76,14 @@
           <input
             @blur="validateCvc"
             @input="cardCvcInputHandler"
-            v-model="cardCvc"
+            v-model="form.cardCvc.value"
             class="card-form__input card-form__input_cvc"
-            :class="{ wrong: !correctCvc }"
+            :class="{ wrong: form.cardCvc.error }"
             placeholder="123"
+            inputmode="numeric"
             required
           />
-          <div v-if="!correctCvc" class="card-form__error">
+          <div v-if="form.cardCvc.error" class="card-form__error">
             3-digit number on the back
           </div>
         </div>
@@ -90,39 +97,29 @@
 <script setup>
 import { ref, defineEmits } from "vue";
 
-let cardholderName = ref();
-let cardNumber = ref();
-let cardCvc = ref();
-let cardMonth = ref();
-let cardYear = ref();
-
-let correctName = ref(true);
-let correctCardNumber = ref(true);
-let correctCvc = ref(true);
-let correctMonth = ref(true);
-let correctYear = ref(true);
+let form = ref({
+  cardholderName: { value: "", error: false },
+  cardNumber: { value: "", error: false },
+  cardCvc: { value: "", error: false },
+  cardMonth: { value: "", error: false },
+  cardYear: { value: "", error: false },
+});
 
 const emit = defineEmits("inputEvent");
 
+emitVariables();
+
 function emitVariables() {
-  emit("inputEvent", cardholderName, cardNumber, cardMonth, cardYear, cardCvc);
+  emit("inputEvent", form.value);
 }
 
 function submitForm() {
-  emit(
-    "submitEvent",
-    correctName,
-    correctCardNumber,
-    correctCvc,
-    correctMonth,
-    correctYear
-  );
+  emit("submitEvent", form.value);
 }
 
 // Allow names like "Eugene Joseph-le-brun"
 function nameInputHandler() {
-  correctName.value = true;
-  cardholderName.value = cardholderName.value
+  form.value.cardholderName.value = form.value.cardholderName.value
     .replace(/([^a-z ]+)/gi, "")
     .replace(/\s+/g, " ")
     .split(" ")
@@ -130,83 +127,85 @@ function nameInputHandler() {
       if (word) return word[0].toUpperCase() + word.substring(1).toLowerCase();
     })
     .join(" ");
-
-  emitVariables();
 }
 
 function cardNumberInputHandler() {
-  correctCardNumber.value = true;
-
-  cardNumber.value = cardNumber.value
+  form.value.cardNumber.value = form.value.cardNumber.value
     .replace(/[^0-9]*/g, "")
     .slice(0, 16)
     .split("")
     .map((digit, i) => ((i + 1) % 4 === 1 ? " " + digit : digit))
     .join("")
     .slice(1);
-
-  emitVariables();
 }
 
 function cardCvcInputHandler() {
-  cardCvc.value = cardCvc.value.replace(/[^0-9]*/g, "").slice(0, 3);
-  emitVariables();
+  form.value.cardCvc.value = form.value.cardCvc.value
+    .replace(/[^0-9]*/g, "")
+    .slice(0, 3);
 }
 
 function cardMonthInputHandler() {
-  cardMonth.value = cardMonth.value.replace(/[^0-9]*/g, "").slice(0, 2);
-  emitVariables();
+  form.value.cardMonth.value = form.value.cardMonth.value
+    .replace(/[^0-9]*/g, "")
+    .slice(0, 2);
 }
 
 function cardYearInputHandler() {
-  cardYear.value = cardYear.value.replace(/[^0-9]/g, "").slice(0, 2);
-  emitVariables();
+  form.value.cardYear.value = form.value.cardYear.value
+    .replace(/[^0-9]/g, "")
+    .slice(0, 2);
 }
 
 function validateYear() {
-  cardYear.value
-    ? cardYear.value.length < 2
-      ? (correctYear.value = false)
-      : (correctYear.value = true)
-    : (correctYear.value = false);
+  form.value.cardYear.value
+    ? form.value.cardYear.value.length < 2
+      ? (form.value.cardYear.error = true)
+      : (form.value.cardYear.error = false)
+    : (form.value.cardYear.error = true);
 }
 
 function validateMonth() {
-  if (cardMonth.value?.length === 1 && +cardMonth.value !== 0) {
-    cardMonth.value = "0" + cardMonth.value;
+  if (+form.value.cardMonth.value === 0) form.value.cardMonth.value = "";
+
+  if (
+    form.value.cardMonth.value?.length === 1 &&
+    +form.value.cardMonth.value <= 9
+  ) {
+    form.value.cardMonth.value = "0" + form.value.cardMonth.value;
   }
 
-  if (+cardMonth.value > 0 && +cardMonth.value <= 12) {
-    correctMonth.value = true;
+  if (+form.value.cardMonth.value > 0 && +form.value.cardMonth.value <= 12) {
+    form.value.cardMonth.error = false;
   } else {
-    correctMonth.value = false;
+    form.value.cardMonth.error = true;
   }
 }
 
 function validateCvc() {
-  if (cardCvc.value)
-    cardCvc.value.length < 3
-      ? (correctCvc.value = false)
-      : (correctCvc.value = true);
-  else correctCvc.value = false;
+  if (form.value.cardCvc.value)
+    form.value.cardCvc.value.length < 3
+      ? (form.value.cardCvc.error = true)
+      : (form.value.cardCvc.error = false);
+  else form.value.cardCvc.error = true;
 }
 
 function validateCardNumber() {
-  if (cardNumber.value) {
-    cardNumber.value.replace(/\s/g, "").length === 16
-      ? (correctCardNumber.value = true)
-      : (correctCardNumber.value = false);
+  if (form.value.cardNumber.value) {
+    form.value.cardNumber.value.replace(/\s/g, "").length === 16
+      ? (form.value.cardNumber.error = false)
+      : (form.value.cardNumber.error = true);
   } else {
-    correctCardNumber.value = false;
+    form.value.cardNumber.error = true;
   }
 }
 
 function validateCardholderName() {
-  cardholderName.value = cardholderName.value?.trim();
+  form.value.cardholderName.value = form.value.cardholderName.value?.trim();
 
-  cardholderName.value
-    ? (correctName.value = true)
-    : (correctName.value = false);
+  form.value.cardholderName.value
+    ? (form.value.cardholderName.error = false)
+    : (form.value.cardholderName.error = true);
 }
 </script>
 
@@ -214,13 +213,14 @@ function validateCardholderName() {
 .card-form-active {
   display: flex;
   align-items: center;
-  width: calc(100vw - 30%);
+  width: 100%;
   justify-content: center;
+  height: calc(100vh - 240px);
+  padding: 0 20px;
 }
 
 .card-form {
   width: 400px;
-
   &__error {
     position: absolute;
     top: 55px;
@@ -269,6 +269,7 @@ function validateCardholderName() {
   &__flexbox {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
 
     .card-form__inputBox:first-child {
       .card-form__error {
@@ -282,6 +283,20 @@ function validateCardholderName() {
 
   .wrong {
     border: 1px solid red;
+  }
+}
+
+@media (min-width: 900px) {
+  .card-form {
+    margin-top: 50px;
+  }
+}
+
+@media (min-width: 1300px) {
+  .card-form-active {
+    height: 100vh;
+    margin: 0;
+    align-items: center;
   }
 }
 </style>
