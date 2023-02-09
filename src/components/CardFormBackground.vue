@@ -212,6 +212,40 @@ function mouseOutSecondCardEventHandler() {
   }
 }
 
+@media (max-width: 340px) {
+  .card-form-background {
+    &__card-front {
+      left: -140px;
+      padding: 10px;
+      width: 228px;
+      height: 125px;
+    }
+
+    &__card-back {
+      left: -90px;
+      width: 228px;
+      height: 125px;
+    }
+
+    &__circles {
+      margin-bottom: 25px;
+    }
+
+    &__card-number {
+      font-size: 16px;
+    }
+
+    &__cardholder-name,
+    &__card-cvc,
+    &__card-exp-date {
+      font-size: 10px;
+      span {
+        font-size: 10px;
+      }
+    }
+  }
+}
+
 @media (min-width: 900px) {
   .card-form-background {
     &__circles {

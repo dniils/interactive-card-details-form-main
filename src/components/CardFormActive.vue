@@ -84,7 +84,7 @@
             required
           />
           <div v-if="form.cardCvc.error" class="card-form__error">
-            3-digit number on the back
+            3 digits on the back
           </div>
         </div>
       </div>
@@ -297,6 +297,18 @@ function validateCardholderName() {
     height: 100vh;
     margin: 0;
     align-items: center;
+  }
+}
+
+@media (max-height: 340px) {
+  .card-form-active {
+    height: calc(100vh + 200px) !important;
+  }
+}
+
+@media (max-height: 620px) {
+  .card-form-active {
+    height: calc(100vh + 76px);
   }
 }
 </style>
