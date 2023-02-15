@@ -89,13 +89,17 @@
         </div>
       </div>
 
-      <button class="card-form__btn btn">Confirm</button>
+      <main-button>
+        <h1>title</h1>
+        <p>text</p>
+      </main-button>
     </form>
   </div>
 </template>
 
 <script setup>
 import { ref, defineEmits } from "vue";
+import MainButton from "@/components/MainButton.vue";
 
 let form = ref({
   cardholderName: { value: "", error: false },

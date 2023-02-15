@@ -9,18 +9,16 @@
 
       <div class="form-completed__title">Thank you!</div>
       <div class="form-completed__subtitle">We've added your card details</div>
-      <button
-        @click="emit('resetFormEvent')"
-        class="form-completed__btn-continue btn"
-      >
-        Continue
-      </button>
+
+      <main-button @click="emit('resetFormEvent')">Continue</main-button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { defineEmits } from "vue";
+import MainButton from "@/components/MainButton.vue";
+
 const emit = defineEmits("resetFormEvent");
 </script>
 

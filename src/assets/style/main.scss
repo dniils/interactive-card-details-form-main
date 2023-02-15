@@ -13,19 +13,3 @@
 input {
   padding: 5px 10px;
 }
-
-.btn {
-  border: none;
-  width: 100%;
-  padding: 10px 0;
-  background-color: #000;
-  color: #fff;
-  border-radius: 5px;
-  transition: background-position-y 0.2s ease-out;
-
-  &:hover {
-    cursor: pointer;
-    background-image: url("../images/bg-main-desktop.png");
-    background-position-y: center;
-  }
-}
