@@ -89,10 +89,7 @@
         </div>
       </div>
 
-      <main-button>
-        <h1>title</h1>
-        <p>text</p>
-      </main-button>
+      <main-button> Submit </main-button>
     </form>
   </div>
 </template>
